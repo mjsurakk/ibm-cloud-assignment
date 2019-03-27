@@ -1,0 +1,6 @@
+---
+applications:
+- name: msurakka-assignment
+  host: msurakka-assignment
+  memory: 512M
+  path: target/MSurakkaAssignment.war
