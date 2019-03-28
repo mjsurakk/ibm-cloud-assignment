@@ -33,15 +33,15 @@ public class EquipmentAPI extends Application {
   @GET
   @Path("/search")
   @Produces(MediaType.APPLICATION_JSON)
-  public String search(@QueryParam("limit") int limit) {
-    return gson.toJson(store.getEquipments(limit));
+  public Response search(@QueryParam("limit") int limit) {
+    return Response.ok(gson.toJson(store.getEquipments(limit))).header("Access-Control-Allow-Origin", "*").build();
   }
 
   @GET
   @Path("/{equipmentNumber}")
   @Produces(MediaType.APPLICATION_JSON)
-  public String search(@PathParam("equipmentNumber") String equipmentNumber) {
-    return gson.toJson(store.search(equipmentNumber));
+  public Response search(@PathParam("equipmentNumber") String equipmentNumber) {
+    return Response.ok(gson.toJson(store.search(equipmentNumber))).header("Access-Control-Allow-Origin", "*").build();
   }
 
   @POST
@@ -57,7 +57,8 @@ public class EquipmentAPI extends Application {
       ex.printStackTrace(System.out);
       JsonObject o = new JsonObject();
       o.addProperty("error", ex.getMessage());
-      return Response.status(Status.BAD_REQUEST).entity(gson.toJson(o)).build();
+
+      return Response.status(Status.BAD_REQUEST).entity(gson.toJson(o)).header("Access-Control-Allow-Origin", "*").build();
     }
   }
 
