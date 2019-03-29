@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import AddEquipmentModal from './AddEquipmentModal';
+import * as ea from "./equipmentActions";
 
 class EquipmentTable extends Component {
 
@@ -16,7 +18,7 @@ class EquipmentTable extends Component {
 
   render() {
     return (
-      <table>
+      <table className="ui celled table">
         <thead>
           <tr>
             <th>Equipment number</th>
@@ -26,23 +28,27 @@ class EquipmentTable extends Component {
             <th>Status</th>
             </tr>
         </thead>
-        <tbody>{this.props.equipment.map(this.renderEquipmentRow)}</tbody>
+        <tbody>
+          {this.props.equipment.map(this.renderEquipmentRow)}
+          {this.props.fetching && (
+          <tr className='ui placeholder'>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>)}
+        </tbody>
       </table>
+
     );
   }
 }
 
-class SearchBar extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      search: ''
-    };
-  }
+class EquipmentActionBar extends Component {
 
   limitChanged = (event) => {
-    this.props.fetch(event.target.value);
+    this.props.fetchEquipment(event.target.value);
   };
 
   searchChanged = (event) => {
@@ -51,49 +57,57 @@ class SearchBar extends Component {
 
   render() {
     return (
-      <div>
-        <input type="text" placeholder="Limit..." onChange={this.limitChanged} />
-        <input type="text" placeholder="Search..." onChange={this.searchChanged} />
+      <div className="ui three column grid container">
+        <div className="ui column input">
+          <input type="number" min="0" placeholder="Limit..." onChange={this.limitChanged} />
+        </div>
+        <div className="ui column input">
+          <input type="text" placeholder="Search..." onChange={this.searchChanged} />
+        </div>
+        <div className="ui column">
+          <AddEquipmentModal/>
+        </div>
       </div>
     );
   }
 }
-
-const backend = process.env.REACT_APP_BACKEND_BASEURL || '';
 
 class EquipmentTableContainer extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-      equipment: []
+      equipment: [],
+      fetching: false
     };
   }
 
   searchByEquipmentNumber = async (term) => {
-    const url = `${backend}/equipment/${term}`;
-
-    const response = await fetch(url);
-    const json = response && await response.json();
     this.setState({
-      equipment: json
+      fetching: true
+    });
+    const json = await ea.searchByEquipmentNumber(term);
+    this.setState({
+      equipment: json,
+      fetching: false
     });
   };
 
   fetchEquipment = async (number) => {
-    const url = `${backend}/equipment/search?limit=${number}`;
-
-    const response = await fetch(url);
-    const json = response && await response.json();
     this.setState({
-      equipment: json
+      fetching: true
+    });
+    const json = await ea.fetchEquipment(number);
+    this.setState({
+      equipment: json,
+      fetching: false
     });
   };
 
   render() {
     return (
-      <div>
-        <SearchBar search={this.searchByEquipmentNumber} fetch={this.fetchEquipment}/>
+      <div className="ui column container">
+        <EquipmentActionBar search={this.searchByEquipmentNumber} fetchEquipment={this.fetchEquipment}/>
         <EquipmentTable {...this.state}/>
       </div>
     );

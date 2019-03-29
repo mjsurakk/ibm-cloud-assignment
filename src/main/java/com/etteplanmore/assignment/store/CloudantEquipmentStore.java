@@ -34,7 +34,6 @@ public class CloudantEquipmentStore implements EquipmentStore {
   }
 
   private static CloudantClient createClient() {
-    System.out.println("########## CREATE CLIENT");
     String url;
 
     if (System.getenv("VCAP_SERVICES") != null) {
@@ -111,7 +110,7 @@ public class CloudantEquipmentStore implements EquipmentStore {
   }
 
   @Override
-  public void saveEquipment(Equipment equipment) throws StoreException {
+  public void saveEquipment(Equipment equipment) throws DuplicateEquipmentException {
 
     List<EquipmentDocument> existing = db.query(new QueryBuilder(Expression.eq("_id", equipment.getEquipmentNumber())).build(),
         EquipmentDocument.class).getDocs();
@@ -127,8 +126,4 @@ public class CloudantEquipmentStore implements EquipmentStore {
     }
   }
 
-  @Override
-  public String getDbInfo() {
-    return db.info().toString();
-  }
 }

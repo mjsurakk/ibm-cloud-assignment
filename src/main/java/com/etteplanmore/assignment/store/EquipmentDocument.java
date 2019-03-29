@@ -1,9 +1,10 @@
 package com.etteplanmore.assignment.store;
 
 import com.etteplanmore.assignment.model.Equipment.Status;
+import java.io.Serializable;
 import java.util.Date;
 
-public class EquipmentDocument {
+public class EquipmentDocument implements Serializable {
 
   private String _id;
   private String _rev;
